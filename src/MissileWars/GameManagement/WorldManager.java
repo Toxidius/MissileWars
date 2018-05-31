@@ -13,9 +13,9 @@ public class WorldManager {
 	
 	public WorldTools worldTools;
 	private File worldsDir;
-	private File chosenWorldConfig;
+	//private File chosenWorldConfig;
 	private ArrayList<File> worlds;
-	private String pathSeparator = File.separator;
+	//private String pathSeparator = File.separator;
 	
 	public WorldManager(){
 		worldTools = new WorldTools();
@@ -65,17 +65,21 @@ public class WorldManager {
 				}
 			}
 			if (chosenGameWorld == null){
-				// specified world could not be found, choose the first one in the list
-				chosenGameWorld = worlds.get(0);
+				// specified world could not be found, choose a random one
+				Bukkit.getServer().broadcastMessage("Specified game world was not found! Choosing random one");
+				chosenGameWorld = worlds.get(Core.r.nextInt(worlds.size()));
 			}
 		}
 		
 		// determine the config file for this world
+		/*
+		 * not needed at the time being
 		chosenWorldConfig = new File(worldsDir.getPath() + pathSeparator + chosenGameWorld.getName() + ".yml");
 		if (chosenWorldConfig.exists() == false){
 			Bukkit.getServer().broadcastMessage("The world config file doesn't exist!");
 			return false;
 		}
+		*/
 		
 		// copy game world
 		try{

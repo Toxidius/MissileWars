@@ -1,5 +1,6 @@
 package MissileWars.GameManagement;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -7,14 +8,19 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 
+import MissileWars.GameMechanics.MissileSpawner;
+import MissileWars.GameMechanics.Missiles;
+import MissileWars.GameMechanics.PortalChecker;
 import MissileWars.GameMechanics.RespawnTimerRunnable;
 import MissileWars.Main.Core;
 import MissileWars.Main.GameStates.GameState;
@@ -25,6 +31,9 @@ public class GameManager {
 	public WorldManager worldManager;
 	public ScoreboardManager scoreboardManager;
 	public GameStarter gameStarter;
+	public PortalChecker portalChecker;
+	public Missiles missiles;
+	public MissileSpawner missileSpawner;
 	
 	public GameManager(){
 		r = new Random();
@@ -58,6 +67,10 @@ public class GameManager {
 		// update world locations
 		Core.team1Spawn.setWorld(Core.gameWorld);
 		Core.team2Spawn.setWorld(Core.gameWorld);
+		Core.team1PortalLocation1.setWorld(Core.gameWorld);
+		Core.team1PortalLocation2.setWorld(Core.gameWorld);
+		Core.team2PortalLocation1.setWorld(Core.gameWorld);
+		Core.team2PortalLocation2.setWorld(Core.gameWorld);
 		
 		// generate the player teams
 		generateTeams();
@@ -75,6 +88,7 @@ public class GameManager {
 				player.setSaturation(40); // set saturation to 40
 				clearInventory(player);
 				givePlayerTeamArmor(player);
+				givePlayerBow(player);
 				if (team == 1){
 					player.teleport(Core.team1Spawn);
 				}
@@ -88,7 +102,10 @@ public class GameManager {
 		Bukkit.getServer().broadcastMessage(ChatColor.AQUA + "All chat is global.");
 		
 		// start scheduled events
-		// TODO missile item spawner
+		portalChecker = new PortalChecker(); // starts automatically
+		missiles = new Missiles(); // generates all missile itemstack and contains code to spawn the physical missile
+		missileSpawner = new MissileSpawner(); // starts automatically
+		
 		// set some final values
 		Core.gameStarted = true;
 		Core.gameState = GameState.Running;
@@ -99,22 +116,23 @@ public class GameManager {
 	@SuppressWarnings("deprecation")
 	public void endGameInitiate(int winningTeam){
 		// initiates the game end sequence
-		int seconds = 10;
+		int seconds = 15;
 		if (winningTeam == -1){
 			seconds = 2;
 		}
 		
 		// end all scheduled events
 		Bukkit.getScheduler().cancelTasks(Core.thisPlugin);
+		
+		// update game state
 		Core.gameState = GameState.Ending;
 		
 		// set all players in spectate mode
 		for (Player player : Bukkit.getOnlinePlayers()){
-			if (player.isOnline()
-					&& player.getGameMode() == GameMode.SURVIVAL){
+			if (player.isOnline()){
 				player.setGameMode(GameMode.SPECTATOR);
-				Location newLocation = player.getLocation().add(0.0, 15.0, 0.0);
-				if (newLocation.getY() < 30){
+				Location newLocation = player.getLocation().add(0.0, 10.0, 0.0);
+				if (newLocation.getY() < 40){
 					newLocation.setY(70.0);
 				}
 				player.teleport(newLocation);
@@ -232,12 +250,7 @@ public class GameManager {
 			lowestPlayer.removeMetadata("game" + Core.gameID + "team", Core.thisPlugin);
 			lowestPlayer.setMetadata("game" + Core.gameID + "team", new FixedMetadataValue(Core.thisPlugin, new Integer(teamToBe)));
 			
-			if (teamToBe == 1){
-				scoreboardManager.addPlayerToTeam(lowestPlayer.getName(), 1);
-			}
-			else if (teamToBe == 2){
-				scoreboardManager.addPlayerToTeam(lowestPlayer.getName(), 2);
-			}
+			scoreboardManager.addPlayerToTeam(lowestPlayer.getName(), teamToBe);
 			
 			// update teamToBe for next player
 			teamToBe++;
@@ -291,14 +304,32 @@ public class GameManager {
 		}
 	}
 	
+	public void givePlayerBow(Player player){
+		ItemStack bow = new ItemStack(Material.BOW, 1);
+		ItemMeta meta = bow.getItemMeta();
+		meta.setDisplayName(ChatColor.RESET + "GunBlade");
+		ArrayList<String> lore = new ArrayList<>();
+		lore.add(ChatColor.DARK_PURPLE + "Use this bow to ignite TNT");
+		lore.add(ChatColor.DARK_PURPLE + "Also acts as a great weapon!");
+		meta.setLore(lore);
+		bow.setItemMeta(meta);
+		bow.addUnsafeEnchantment(Enchantment.DURABILITY, 10);
+		bow.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 4);
+		
+		player.getInventory().addItem(bow);
+	}
+	
 	public void setPlayerTeam(Player player, int team, boolean teleport){
 		// set meta
 		player.removeMetadata("game" + Core.gameID + "team", Core.thisPlugin);
 		player.setMetadata("game" + Core.gameID + "team", new FixedMetadataValue(Core.thisPlugin, new Integer(team)));
 		
 		// set scoreboard
-		scoreboardManager.removePlayerFromTeam(player.getName(), team);
+		scoreboardManager.removePlayerFromTeam(player.getName(), team); // remove them if already on the team for some reason
 		scoreboardManager.addPlayerToTeam(player.getName(), team);
+		
+		// update armor
+		givePlayerTeamArmor(player);
 		
 		// teleport to new team spawn
 		if (teleport == true){
@@ -345,24 +376,40 @@ public class GameManager {
 		return amount;
 	}
 	
+	public boolean doesPlayerHaveItemWithName(Player player, String itemName){
+		for (ItemStack stack : player.getInventory().getContents()){
+			if (stack == null
+					|| stack.getType() == Material.AIR){
+				continue; // skip
+			}
+			if (stack.hasItemMeta()
+					&& stack.getItemMeta().hasDisplayName()
+					&& stack.getItemMeta().getDisplayName().contains(itemName)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("deprecation")
 	public void simulateDeath(Player player){
 		// simulated death stuff
-		player.setHealth(20); // respawn the player
+		player.setHealth(20); // auto respawn the player if necessary
 		player.setFallDistance(0F);
 		player.setFoodLevel(20); // set food level to full
 		player.setSaturation(20); // set saturation to 20
+		player.setFireTicks(1);
 		for (PotionEffect effect : player.getActivePotionEffects()){ // remove all potion effects
 			player.removePotionEffect(effect.getType());
 		}
 		player.setGameMode(GameMode.SPECTATOR);
 		Location newLocation = player.getLocation().add(0.0, 5.0, 0.0);
-		if (newLocation.getY() < 20){
+		if (newLocation.getY() < 40){
 			newLocation.setY(70.0);
 		}
 		player.teleport(newLocation);
 		
-		// set the equipment the player will respawn with here
+		// replace the armor the player is wearing (does not remove the regular inventory contents)
 		givePlayerTeamArmor(player);
 		
 		// start the countdown timer thingy

@@ -24,11 +24,10 @@ public class ScoreboardManager{
 	//private Score line3;
 	//private Score line4;
 	
-	public int time = 0;
-	
 	public ScoreboardManager(){
 		scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 		emptyScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+		setupScoreboard();
 	}
 	
 	public void setupScoreboard(){
@@ -48,9 +47,6 @@ public class ScoreboardManager{
 		
 		killsObjective = scoreboard.registerNewObjective("Kills", "playerKillCount");
 		killsObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		
-		// reset the current time(calls) for scoreboard runnable
-		time = 0;
 	}
 	
 	public void addPlayerToTeam(String playerName, int team){
