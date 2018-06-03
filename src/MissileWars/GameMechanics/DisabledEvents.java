@@ -3,6 +3,9 @@ package MissileWars.GameMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,8 +13,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -47,6 +52,18 @@ public class DisabledEvents implements Listener{
 				+ " z:" + e.getBlock().getZ());
 	}
 	*/
+	
+	@EventHandler
+	public void onFireballExplodePortal(EntityExplodeEvent e){
+		if (e.getEntity() instanceof Fireball){
+			for (Block block : e.blockList()){
+				if (block.getType() == Material.PORTAL){
+					e.blockList().clear(); // prevent the portal from being damaged by fireballs (team griefing)
+					return;
+				}
+			}
+		}
+	}
 	
 	@EventHandler
 	public void onServerPing(ServerListPingEvent e){
@@ -105,8 +122,9 @@ public class DisabledEvents implements Listener{
 	@EventHandler
 	public void onInventoryItemMove(InventoryClickEvent e){
 		Player player = (Player) e.getWhoClicked();
-		if (player.getGameMode() != GameMode.CREATIVE){
-			e.setCancelled(true); // only creative players allowed to move items in their inventory
+		if (player.getGameMode() != GameMode.CREATIVE
+				&& e.getSlotType() == SlotType.ARMOR){
+			e.setCancelled(true); // only creative players allowed to move armor items in inventory
 		}
 	}
 	

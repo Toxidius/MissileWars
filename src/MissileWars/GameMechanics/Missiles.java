@@ -16,6 +16,7 @@ import MissileWars.Main.Core;
 
 public class Missiles {
 
+	// missile spawn egg items
 	public ItemStack guardianEgg = new ItemStack(Material.MONSTER_EGG, 1, (short)68);
 	public ItemStack shieldbusterEgg = new ItemStack(Material.MONSTER_EGG, 1, (short)66);
 	public ItemStack tomahawkEgg = new ItemStack(Material.MONSTER_EGG, 1, (short)50);
@@ -23,60 +24,34 @@ public class Missiles {
 	public ItemStack lightningEgg = new ItemStack(Material.MONSTER_EGG, 1, (short)98);
 	public ItemStack shieldEgg = new ItemStack(Material.SNOW_BALL, 1);
 	public ItemStack fireballEgg = new ItemStack(Material.MONSTER_EGG, 1, (short)61);
+	public ItemStack arrows = new ItemStack(Material.ARROW, 3);
 	
 	// team1 missile locations
 	public Location team1GuardianLocation = new Location(Core.gameWorld, -94, 63, 25);
 	public Location team1ShieldbusterLocation = new Location(Core.gameWorld, -108, 63, 24);
 	public Location team1TomahawkLocation = new Location(Core.gameWorld, -112, 62, 24);
 	public Location team1JuggernautLocation = new Location(Core.gameWorld, -103, 63, 24);
-	public Location team1LightningLocation = new Location(Core.gameWorld, -98, 62, 24);
+	public Location team1LightningLocation = new Location(Core.gameWorld, -98, 62, 25);
 	
 	// team2 missile locations
 	public Location team2GuardianLocation = new Location(Core.gameWorld, -93, 63, -25);
 	public Location team2ShieldbusterLocation = new Location(Core.gameWorld, -108, 63, -24);
 	public Location team2TomahawkLocation = new Location(Core.gameWorld, -113, 62, -24);
 	public Location team2JuggernautLocation = new Location(Core.gameWorld, -103, 63, -24);
-	public Location team2LightningLocation = new Location(Core.gameWorld, -98, 62, -24);
+	public Location team2LightningLocation = new Location(Core.gameWorld, -98, 62, -25);
 	
 	// missle lengths
 	public int guardianLength = 8;
 	public int shieldbusterLength = 15;
 	public int tomahawkLength = 13;
 	public int juggernautLength = 11;
-	public int lightningLength = 9;
+	public int lightningLength = 10;
 	
 	// team1 shield locations (center of shield)
 	Location team1ShieldLocation = new Location(Core.gameWorld, -115, 62, 1);
 	
 	// team2 shield locations (center of shield)
 	Location team2ShieldLocation = new Location(Core.gameWorld, -115, 62, -1);
-	
-	/*
-	Location team1GuardianLocation1 = new Location(Core.gameWorld, -95, 61, 25);
-	Location team1GuardianLocation2 = new Location(Core.gameWorld, -93, 63, 18);
-	Location team1ShieldbusterLocation1 = new Location(Core.gameWorld, -109, 61, 24);
-	Location team1ShieldbusterLocation2 = new Location(Core.gameWorld, -107, 63, 10);
-	Location team1TomahawkLocation1 = new Location(Core.gameWorld, -109, 61, 24);
-	Location team1TomahawkLocation2 = new Location(Core.gameWorld, -107, 63, 10);
-	Location team1JuggernautLocation1 = new Location(Core.gameWorld, -104, 61, 24);
-	Location team1JuggernautLocation2 = new Location(Core.gameWorld, -102, 63, 14);
-	Location team1LightningLocation1 = new Location(Core.gameWorld, -99, 61, 24);
-	Location team1LightningLocation2 = new Location(Core.gameWorld, -97, 62, 16);
-	*/
-	
-	// team2 missile locations
-	/*
-	Location team2GuardianLocation1 = new Location(Core.gameWorld, -92, 61, -25);
-	Location team2GuardianLocation2 = new Location(Core.gameWorld, -94, 63, -18);
-	Location team2ShieldbusterLocation1 = new Location(Core.gameWorld, -107, 61, -24);
-	Location team2ShieldbusterLocation2 = new Location(Core.gameWorld, -109, 63, -10);
-	Location team2TomahawkLocation1 = new Location(Core.gameWorld, -112, 61, -24);
-	Location team2TomahawkLocation2 = new Location(Core.gameWorld, -113, 62, -12);
-	Location team2JuggernautLocation1 = new Location(Core.gameWorld, -102, 61, -24);
-	Location team2JuggernautLocation2 = new Location(Core.gameWorld, -104, 63, -14);
-	Location team2LightningLocation1 = new Location(Core.gameWorld, -97, 61, -24);
-	Location team2LightningLocation2 = new Location(Core.gameWorld, -99, 62, -16);
-	*/
 	
 	public Missiles(){
 		ItemMeta meta;
@@ -108,14 +83,18 @@ public class Missiles {
 		meta = fireballEgg.getItemMeta();
 		meta.setDisplayName(ChatColor.RESET + "Deploy Fireball");
 		fireballEgg.setItemMeta(meta);
+		
+		meta = arrows.getItemMeta();
+		meta.setDisplayName(ChatColor.RESET + "Arrow");
+		arrows.setItemMeta(meta);
 	}
 	
 	/**
 	 * Gets an array containing all the missile egg itemstacks
 	 * @return array of itemstacks
 	 */
-	public ItemStack[] getMissileEggs(){
-		ItemStack[] stack = new ItemStack[7];
+	public ItemStack[] getSpawnEggs(){
+		ItemStack[] stack = new ItemStack[8];
 		stack[0] = guardianEgg;
 		stack[1] = shieldbusterEgg;
 		stack[2] = tomahawkEgg;
@@ -123,6 +102,7 @@ public class Missiles {
 		stack[4] = lightningEgg;
 		stack[5] = shieldEgg;
 		stack[6] = fireballEgg;
+		stack[7] = arrows;
 		return stack;
 	}
 	
@@ -131,40 +111,59 @@ public class Missiles {
 	 * the user has in their hand.
 	 * @param clickedBlock the block the player clicked
 	 * @param player the player who clicked
+	 * @return true if the missile was spawned, otherwise, false
 	 */
-	public void spawnMissile(Block clickedBlock, Player player){
-		int team = Core.gameManager.getPlayerTeam(player);
-		if (team == -1){
-			return; // player isn't on a team
-		}
-		
+	public boolean spawnMissile(Block clickedBlock, Player player){
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null
 				|| itemInHand.getType() == Material.AIR){
-			return; // empty item
+			return false; // empty item
 		}
 		
-		// determine the starting coordinate
+		int team = Core.gameManager.getPlayerTeam(player);
+		if (team == -1){
+			return false; // player isn't on a team
+		}
+		
+		// determine the coordinates and build the missile there
 		Location startingLocation = null;
 		Location missileLocation = null;
-		int missileLength;
+		int missileLength = getMissileLength(itemInHand);
 		if (team == 1){
 			// green team
-			startingLocation = clickedBlock.getLocation().add(0, -2, -3);
+			startingLocation = clickedBlock.getLocation().add(0, -3, -3);
+			if (startingLocation.getBlockZ() > 66){
+				// player is trying to place the missile behind their own portal
+				player.sendMessage(ChatColor.RED + "You can't place missiles back here!");
+				return false;
+			}
+			if (startingLocation.getBlock().getType() != Material.AIR
+					&& startingLocation.getBlock().getZ() >= 51){
+				player.sendMessage(ChatColor.RED + "You can't place missiles in your shield!");
+				return false;
+			}
 			missileLocation = getMissileLocation(team, itemInHand);
-			missileLength = getMissileLength(itemInHand);
-			
-			//printLocation(startingLocation, "startingLocation");
-			//printLocation(missileLocation, "missileLocation");
-			//Bukkit.getServer().broadcastMessage("missileLength: " + missileLength);
 			
 			buildMissile(startingLocation, missileLocation, missileLength, team);
 		}
 		else if (team == 2){
-			// red team
-			// TODO
+			// green team
+			startingLocation = clickedBlock.getLocation().add(0, -3, 3);
+			if (startingLocation.getBlockZ() < -65){
+				// player is trying to place the missile behind their own portal
+				player.sendMessage(ChatColor.RED + "You can't place missiles back here!");
+				return false;
+			}
+			if (startingLocation.getBlock().getType() != Material.AIR
+					&& startingLocation.getBlockZ() <= -51){
+				player.sendMessage(ChatColor.RED + "You can't place missiles in your shield!");
+				return false;
+			}
+			missileLocation = getMissileLocation(team, itemInHand);
+			
+			buildMissile(startingLocation, missileLocation, missileLength, team);
 		}
-		
+		return true;
 	}
 	
 	public void printLocation(Location location, String preMessage){
@@ -275,12 +274,13 @@ public class Missiles {
 	 */
 	@SuppressWarnings("deprecation")
 	public void buildMissile(Location startLocation, Location missileLocation, int length, int team){
+		ArrayList<Block> updateableBlocks = new ArrayList<>();
+		
 		if (team == 1){
 			// green team
 			Block tempBlock;
 			Block missileBlock;
 			
-			ArrayList<Block> updateableBlocks = new ArrayList<>();
 			for (int z = length-1; z >= 0; z--){
 				for (int y = -2; y <= 0; y++){
 					for (int x = -1; x <= 1; x++){
@@ -295,6 +295,10 @@ public class Missiles {
 						tempBlock.setType(missileBlock.getType(), false); // set the type and apply physics to it
 						tempBlock.setData(missileBlock.getData(), false); // set the data and apply physics to it
 						
+						/*
+						 * checks if the block is a piston and if it has an adjacent piston. If so,
+						 * this piston can be updated to trigger the missile to move
+						 */
 						if (missileBlock.getType() == Material.PISTON_BASE
 								|| missileBlock.getType() == Material.PISTON_STICKY_BASE){
 							if (doesBlockHaveNearbyPiston(missileBlock) == true){
@@ -304,19 +308,48 @@ public class Missiles {
 					}
 				}
 			}
-			
-			// loop though all updateable piston blocks and updating them with fire
-			int numUpdated = 0;
-			for (Block block : updateableBlocks){
-				//block.getState().update(true, true); // force update
-				updatePistonBlock(block);
-				numUpdated++;
-			}
-			Bukkit.getServer().broadcastMessage("updated: " + numUpdated);
 		}
 		else if (team == 2){
-			// TODO
+			Block tempBlock;
+			Block missileBlock;
+			
+			for (int z = length-1; z >= 0; z--){
+				for (int y = -2; y <= 0; y++){
+					for (int x = 1; x >= -1; x--){
+						missileBlock = missileLocation.clone().add(x, y, z).getBlock();
+						tempBlock = startLocation.clone().add(x, y, z).getBlock();
+						
+						if (missileBlock.getType() == Material.AIR){
+							continue; // skip air blocks
+						}
+						
+						// sets this block to the same data as the one in storage (basically copies it)
+						tempBlock.setType(missileBlock.getType(), false); // set the type and apply physics to it
+						tempBlock.setData(missileBlock.getData(), false); // set the data and apply physics to it
+						
+						/*
+						 * checks if the block is a piston and if it has an adjacent piston. If so,
+						 * this piston can be updated to trigger the missile to move
+						 */
+						if (missileBlock.getType() == Material.PISTON_BASE
+								|| missileBlock.getType() == Material.PISTON_STICKY_BASE){
+							if (doesBlockHaveNearbyPiston(missileBlock) == true){
+								updateableBlocks.add(tempBlock);
+							}
+						}
+					}
+				}
+			}
 		}
+		
+		// loop though all updateable piston blocks and updating them with fire (stays for 1 tick causing a block update)
+		if (updateableBlocks.isEmpty() == false){
+			for (Block block : updateableBlocks){
+				//block.getState().update(true, true); // old force update -- does not work with quasi-connectivity
+				updatePistonBlock(block);
+			}
+		}
+		
 	}
 	
 	/**

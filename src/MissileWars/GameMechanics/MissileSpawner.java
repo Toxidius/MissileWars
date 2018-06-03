@@ -13,7 +13,9 @@ import MissileWars.Main.GameStates.GameState;
 public class MissileSpawner implements Runnable{
 
 	private int id;
+	@SuppressWarnings("unused")
 	private int calls;
+	private int secondsInterval = 15;
 	
 	public MissileSpawner() {
 		start();
@@ -21,7 +23,7 @@ public class MissileSpawner implements Runnable{
 	
 	public void start(){
 		calls = 0;
-		id = Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.thisPlugin, this, 80, 60*20); // delay (4 seconds), interval (1 minute)
+		id = Bukkit.getScheduler().scheduleSyncRepeatingTask(Core.thisPlugin, this, 40, secondsInterval*20); // delay (4 seconds), interval (1 minute)
 	}
 	
 	public void stop(){
@@ -39,29 +41,31 @@ public class MissileSpawner implements Runnable{
 		// gives all players on teams a random missile
 		int team;
 		Random random = new Random();
-		ItemStack[] missiles = Core.gameManager.missiles.getMissileEggs();
-		ItemStack chosenMissile = missiles[random.nextInt(missiles.length)];
+		ItemStack[] spawnEggs = Core.gameManager.missiles.getSpawnEggs();
+		ItemStack chosenMissile = spawnEggs[random.nextInt(spawnEggs.length)];
 		
 		// TODO: Remove -- temporary for testing
+		/*
 		if (calls == 1){
 			for (Player player : Bukkit.getOnlinePlayers()){
 				team = Core.gameManager.getPlayerTeam(player);
 				
 				if (team != -1){
-					for (ItemStack stack : missiles){
+					for (ItemStack stack : spawnEggs){
 						player.getInventory().addItem(stack);
 					}
 				}
 			}
 			return;
 		}
+		*/
 		
 		for (Player player : Bukkit.getOnlinePlayers()){
 			team = Core.gameManager.getPlayerTeam(player);
 			
 			if (team != -1){
 				// player is on a team and playing
-				boolean alreadyHasMissile = Core.gameManager.doesPlayerHaveItemWithName(player, chosenMissile.getItemMeta().getDisplayName());
+				boolean alreadyHasMissile = Core.gameManager.doesPlayerHaveItem(player, chosenMissile);
 				if (alreadyHasMissile == true){
 					player.sendMessage(ChatColor.RED + "You already have " 
 							+ chosenMissile.getItemMeta().getDisplayName() 

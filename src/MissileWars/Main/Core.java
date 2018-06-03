@@ -21,6 +21,7 @@ import MissileWars.GameMechanics.MissilePlacing;
 import MissileWars.GameMechanics.PlayerChat;
 import MissileWars.GameMechanics.PlayerDeath;
 import MissileWars.GameMechanics.PlayerJoin;
+import MissileWars.GameMechanics.ShieldThrow;
 import MissileWars.Main.GameStates.GameState;
 
 public class Core extends JavaPlugin{
@@ -91,6 +92,7 @@ public class Core extends JavaPlugin{
 		PlayerDeath playerDeath = new PlayerDeath();
 		DisabledEvents disabledEvents = new DisabledEvents();
 		MissilePlacing missilePlacing = new MissilePlacing();
+		ShieldThrow shieldThrow = new ShieldThrow();
 		
 		// initialize objects
 		gameManager = new GameManager();
@@ -178,7 +180,7 @@ public class Core extends JavaPlugin{
 			
 			// gives the player all the missile eggs
 			Player player = (Player) sender;
-			for (ItemStack item : Core.gameManager.missiles.getMissileEggs()){
+			for (ItemStack item : Core.gameManager.missiles.getSpawnEggs()){
 				player.getInventory().addItem(item);
 			}
 			return true;

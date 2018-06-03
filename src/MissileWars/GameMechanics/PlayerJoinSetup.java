@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import MissileWars.Main.Core;
 
@@ -22,7 +24,11 @@ public class PlayerJoinSetup implements Runnable{
 		
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFallDistance(0); // so they don't die if falling
-		player.setHealth(20); // full health
+		
+		player.setHealth(18); // near full health
+		//regen 5 for 1 second -- makes the scoreboard health value for the players automatically update
+		player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20, 4));
+		
 		player.setFoodLevel(20); // set food level to full
 		player.setSaturation(40); // set saturation to 40
 		Core.gameManager.clearInventory(player);

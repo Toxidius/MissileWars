@@ -17,9 +17,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import MissileWars.GameMechanics.MissileSpawner;
 import MissileWars.GameMechanics.Missiles;
+import MissileWars.GameMechanics.PlayerFallThoughMissileChecker;
 import MissileWars.GameMechanics.PortalChecker;
 import MissileWars.GameMechanics.RespawnTimerRunnable;
 import MissileWars.Main.Core;
@@ -34,6 +36,7 @@ public class GameManager {
 	public PortalChecker portalChecker;
 	public Missiles missiles;
 	public MissileSpawner missileSpawner;
+	public PlayerFallThoughMissileChecker playerFallThoughMissileChecker;
 	
 	public GameManager(){
 		r = new Random();
@@ -83,9 +86,13 @@ public class GameManager {
 				player.setScoreboard(scoreboardManager.scoreboard);
 				player.setGameMode(GameMode.SURVIVAL);
 				player.setFallDistance(0); // so they don't die if falling
-				player.setHealth(20); // full health
+				
+				player.setHealth(18); // near full health
+				//regen 5 for 1 second -- makes the scoreboard health value for the players automatically update
+				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20, 4));
+				
 				player.setFoodLevel(20); // set food level to full
-				player.setSaturation(40); // set saturation to 40
+				player.setSaturation(40); // set saturation to 40 overfull
 				clearInventory(player);
 				givePlayerTeamArmor(player);
 				givePlayerBow(player);
@@ -105,6 +112,7 @@ public class GameManager {
 		portalChecker = new PortalChecker(); // starts automatically
 		missiles = new Missiles(); // generates all missile itemstack and contains code to spawn the physical missile
 		missileSpawner = new MissileSpawner(); // starts automatically
+		playerFallThoughMissileChecker = new PlayerFallThoughMissileChecker(); // starts automatically
 		
 		// set some final values
 		Core.gameStarted = true;
@@ -315,6 +323,7 @@ public class GameManager {
 		bow.setItemMeta(meta);
 		bow.addUnsafeEnchantment(Enchantment.DURABILITY, 10);
 		bow.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 4);
+		bow.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 1);
 		
 		player.getInventory().addItem(bow);
 	}
@@ -376,15 +385,14 @@ public class GameManager {
 		return amount;
 	}
 	
-	public boolean doesPlayerHaveItemWithName(Player player, String itemName){
+	public boolean doesPlayerHaveItem(Player player, ItemStack item){
 		for (ItemStack stack : player.getInventory().getContents()){
 			if (stack == null
 					|| stack.getType() == Material.AIR){
 				continue; // skip
 			}
-			if (stack.hasItemMeta()
-					&& stack.getItemMeta().hasDisplayName()
-					&& stack.getItemMeta().getDisplayName().contains(itemName)){
+			if (stack.getType() == item.getType()
+					&& stack.getData() == item.getData()){
 				return true;
 			}
 		}
