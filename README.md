@@ -1,2 +1,2 @@
 # MissileWars
-Missile Wars Minecraft minigame remake using the Spitgot API. Original game idea and mechanics by SethBling and Cubehamster.
+Missile Wars Minecraft minigame remake by Toxidius using the Spitgot API rather than command blocks. Original game idea, mechanics, and map by SethBling and Cubehamster.
