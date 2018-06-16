@@ -112,7 +112,7 @@ public class GameManager {
 		portalChecker = new PortalChecker(); // starts automatically
 		missiles = new Missiles(); // generates all missile itemstack and contains code to spawn the physical missile
 		missileSpawner = new MissileSpawner(); // starts automatically
-		playerFallThoughMissileChecker = new PlayerFallThoughMissileChecker(); // starts automatically
+		//playerFallThoughMissileChecker = new PlayerFallThoughMissileChecker(); // starts automatically
 		
 		// set some final values
 		Core.gameStarted = true;
@@ -392,7 +392,7 @@ public class GameManager {
 				continue; // skip
 			}
 			if (stack.getType() == item.getType()
-					&& stack.getData() == item.getData()){
+					&& stack.getDurability() == item.getDurability()){
 				return true;
 			}
 		}

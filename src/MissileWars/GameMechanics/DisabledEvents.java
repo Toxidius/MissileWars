@@ -19,10 +19,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.util.Vector;
 
 import MissileWars.Main.Core;
 
@@ -44,14 +46,23 @@ public class DisabledEvents implements Listener{
 		}
 	}
 	
-	/*
 	@EventHandler
-	public void onCommandBlockTrigger(BlockRedstoneEvent e){
-		Bukkit.getServer().broadcastMessage("Redstone event with block at x:" + e.getBlock().getX() 
-				+ " y:" + e.getBlock().getY() 
-				+ " z:" + e.getBlock().getZ());
+	public void onPlayerMove(PlayerMoveEvent e){
+		if (Core.gameStarted == true
+				&& e.getPlayer().getGameMode() == GameMode.SURVIVAL
+				&& e.getTo().getBlock().getType() != Material.AIR
+				&& e.getTo().getBlock().getType().isSolid() == true
+				&& e.getTo().getBlock().getType() != Material.STAINED_GLASS_PANE
+				&& e.getTo().getBlock().getType() != Material.PISTON_EXTENSION){
+			e.setCancelled(true); // player it getting glitched
+			
+			// set player velocity forward and up
+			Vector newVelocity = new Vector(0.0, 0.1, 0.0);
+			e.getPlayer().setVelocity(newVelocity);
+			
+			//Bukkit.getServer().broadcastMessage("prevented glitch");
+		}
 	}
-	*/
 	
 	@EventHandler
 	public void onFireballExplodePortal(EntityExplodeEvent e){

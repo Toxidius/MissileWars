@@ -41,6 +41,9 @@ public class MissilePlacing implements Listener{
 					fireball.setVelocity(new Vector(0.0, 0.0, 0.0));
 					fireball.setDirection(new Vector(0.0, 0.0, 0.0));
 					fireball.setCustomName("Punch Me!");
+					fireball.setCustomNameVisible(true);
+					@SuppressWarnings("unused")
+					FireballWatcher watcher = new FireballWatcher(fireball);
 					spawned = true;
 				}else{
 					// item in the player's hand is a missile; spawn it

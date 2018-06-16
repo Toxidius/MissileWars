@@ -1,5 +1,6 @@
 package MissileWars.GameMechanics;
 
+import org.bukkit.Achievement;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
@@ -16,6 +17,10 @@ public class PlayerJoin implements Listener{
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
+		if (e.getPlayer().hasAchievement(Achievement.OPEN_INVENTORY) == false){
+			e.getPlayer().awardAchievement(Achievement.OPEN_INVENTORY);
+		}
+		
 		if (Core.gameStarted == false){
 			e.getPlayer().teleport(Core.lobbySpawn);
 			e.getPlayer().setGameMode(GameMode.SURVIVAL);

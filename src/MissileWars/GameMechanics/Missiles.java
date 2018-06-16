@@ -83,10 +83,6 @@ public class Missiles {
 		meta = fireballEgg.getItemMeta();
 		meta.setDisplayName(ChatColor.RESET + "Deploy Fireball");
 		fireballEgg.setItemMeta(meta);
-		
-		meta = arrows.getItemMeta();
-		meta.setDisplayName(ChatColor.RESET + "Arrow");
-		arrows.setItemMeta(meta);
 	}
 	
 	/**

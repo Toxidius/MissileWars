@@ -44,7 +44,7 @@ public class MissileSpawner implements Runnable{
 		ItemStack[] spawnEggs = Core.gameManager.missiles.getSpawnEggs();
 		ItemStack chosenMissile = spawnEggs[random.nextInt(spawnEggs.length)];
 		
-		// TODO: Remove -- temporary for testing
+		// TODO: Remove -- temporary code for testing all missiles
 		/*
 		if (calls == 1){
 			for (Player player : Bukkit.getOnlinePlayers()){
@@ -67,9 +67,20 @@ public class MissileSpawner implements Runnable{
 				// player is on a team and playing
 				boolean alreadyHasMissile = Core.gameManager.doesPlayerHaveItem(player, chosenMissile);
 				if (alreadyHasMissile == true){
-					player.sendMessage(ChatColor.RED + "You already have " 
+					if (chosenMissile.hasItemMeta() == true
+							&& chosenMissile.getItemMeta().hasDisplayName() == true){
+						player.sendMessage(ChatColor.RED + "You already have " 
 							+ chosenMissile.getItemMeta().getDisplayName() 
 							+ ChatColor.RED + " so you didn't recieve one!");
+					}
+					else{
+						// retrieves the item's material name (first letter uppercase, rest lowercase)
+						String itemName = chosenMissile.getType().toString().toLowerCase();
+						itemName = itemName.substring(0, 1).toUpperCase() + itemName.substring(1, itemName.length()); 
+						player.sendMessage(ChatColor.RED + "You already have " 
+								+ ChatColor.WHITE + itemName + ChatColor.RED + " so you didn't recieve one!");
+					}
+					
 				} else{
 					player.getInventory().addItem(chosenMissile);
 				}

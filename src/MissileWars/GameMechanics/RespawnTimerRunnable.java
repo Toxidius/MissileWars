@@ -25,6 +25,8 @@ public class RespawnTimerRunnable implements Runnable{
 		this.player = player;
 		this.keepArmor = keepArmor;
 		this.keepInventory = keepInventory;
+		player.getInventory().setArmorContents(this.keepArmor);
+		player.getInventory().setContents(this.keepInventory);
 		playerName = player.getName();
 		calls = 0;
 		respawnTime = 5;
@@ -39,11 +41,6 @@ public class RespawnTimerRunnable implements Runnable{
 	public void run() {
 		if (calls >= respawnTime){
 			initiateRespawn();
-		}
-		else if (calls == 1){
-			// set the players keep inventory
-			player.getInventory().setArmorContents(keepArmor);
-			player.getInventory().setContents(keepInventory);
 		}
 		
 		calls++;
@@ -83,8 +80,6 @@ public class RespawnTimerRunnable implements Runnable{
 		player.setSaturation(20);
 		player.setFallDistance(0);
 		player.setVelocity(new Vector(0.0, 0.0, 0.0));
-		player.getInventory().setArmorContents(keepArmor);
-		player.getInventory().setContents(keepInventory);
 		player.sendTitle("", "");
 		player.resetTitle();
 		
