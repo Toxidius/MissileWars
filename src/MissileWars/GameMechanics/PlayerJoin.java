@@ -32,7 +32,7 @@ public class PlayerJoin implements Listener{
 			if (playerTeam == -1){
 				// has no team, teleport to spawn and run the player setup runnable
 				e.getPlayer().setGameMode(GameMode.SPECTATOR);
-				e.getPlayer().teleport(Core.lobbySpawn);
+				e.getPlayer().teleport(Core.team1Spawn);
 				e.getPlayer().setScoreboard(Core.gameManager.scoreboardManager.scoreboard);
 				e.getPlayer().sendMessage(ChatColor.GOLD + "Placing you on a team...");
 				// start the runnable that places the player on a team

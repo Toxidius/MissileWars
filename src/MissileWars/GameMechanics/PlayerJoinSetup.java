@@ -15,7 +15,7 @@ public class PlayerJoinSetup implements Runnable{
 	
 	public PlayerJoinSetup(Player player) {
 		this.player = player;
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Core.thisPlugin, this, 80L); // perform team setting in 4 seconds
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Core.thisPlugin, this, 20L); // perform team setting in 1 second
 	}
 	
 	@Override
@@ -43,8 +43,8 @@ public class PlayerJoinSetup implements Runnable{
 			Bukkit.getServer().broadcastMessage(ChatColor.GRAY + player.getName() + " has been placed on Red");
 		}
 		
-		player.sendMessage(ChatColor.AQUA + "All chat is global unless prefaced with a \".\" for team message.");
-		player.sendMessage(ChatColor.AQUA + "Ex: \".Hi Team mates!\" for a team message");
+		player.sendMessage(ChatColor.LIGHT_PURPLE + "All chat is team unless prefaced with a \"!\" for global message");
+		player.sendMessage(ChatColor.LIGHT_PURPLE + "Ex: \"!Hi Everybody\" for a global message");
 	}
 	
 	public int getLowestTeam(){

@@ -19,12 +19,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
-import org.bukkit.util.Vector;
 
 import MissileWars.Main.Core;
 
@@ -46,6 +44,7 @@ public class DisabledEvents implements Listener{
 		}
 	}
 	
+	/*
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e){
 		if (Core.gameStarted == true
@@ -57,12 +56,12 @@ public class DisabledEvents implements Listener{
 			e.setCancelled(true); // player it getting glitched
 			
 			// set player velocity forward and up
-			Vector newVelocity = new Vector(0.0, 0.1, 0.0);
-			e.getPlayer().setVelocity(newVelocity);
+			//e.getPlayer().setVelocity(new Vector(0.0, 0.1, 0.0));
 			
 			//Bukkit.getServer().broadcastMessage("prevented glitch");
 		}
 	}
+	*/
 	
 	@EventHandler
 	public void onFireballExplodePortal(EntityExplodeEvent e){
@@ -105,6 +104,10 @@ public class DisabledEvents implements Listener{
 			if (e.getPlayer().getGameMode() != GameMode.CREATIVE){
 				e.setCancelled(true); // creative players allowed to break blocks in lobby (game not started)
 			}
+		}
+		else if (e.getBlock().getType() == Material.OBSIDIAN
+				&& e.getPlayer().getGameMode() != GameMode.CREATIVE){
+			e.setCancelled(true); // in game, players can't break obsidian
 		}
 	}
 	

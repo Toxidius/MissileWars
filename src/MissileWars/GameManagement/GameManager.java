@@ -106,13 +106,14 @@ public class GameManager {
 		}
 		
 		// game start messages
-		Bukkit.getServer().broadcastMessage(ChatColor.AQUA + "All chat is global.");
+		Bukkit.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE + "All chat is team unless prefaced with a \"!\" for global message");
+		Bukkit.getServer().broadcastMessage(ChatColor.LIGHT_PURPLE + "Ex: \"!Hi Everybody\" for a global message");
 		
 		// start scheduled events
 		portalChecker = new PortalChecker(); // starts automatically
 		missiles = new Missiles(); // generates all missile itemstack and contains code to spawn the physical missile
 		missileSpawner = new MissileSpawner(); // starts automatically
-		//playerFallThoughMissileChecker = new PlayerFallThoughMissileChecker(); // starts automatically
+		playerFallThoughMissileChecker = new PlayerFallThoughMissileChecker(); // starts automatically
 		
 		// set some final values
 		Core.gameStarted = true;
@@ -442,6 +443,16 @@ public class GameManager {
 					&& contents[i].getItemMeta().getDisplayName().equals(itemName)){
 				inv.clear(i);
 				return;
+			}
+		}
+	}
+	
+	public void teamMessage(int team, String message){
+		int playerTeam;
+		for (Player player : Bukkit.getOnlinePlayers()){
+			playerTeam = getPlayerTeam(player);
+			if (playerTeam == team){
+				player.sendMessage(message);
 			}
 		}
 	}

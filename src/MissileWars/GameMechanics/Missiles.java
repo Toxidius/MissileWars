@@ -133,7 +133,12 @@ public class Missiles {
 				player.sendMessage(ChatColor.RED + "You can't place missiles back here!");
 				return false;
 			}
-			if (startingLocation.getBlock().getType() != Material.AIR
+			if (startingLocation.getBlockX() <= -71){
+				// player is trying to place a missile near or inside the barrier blocks (to grief missile storage)
+				player.sendMessage(ChatColor.RED + "You can't place missiles over here!");
+				return false;
+			}
+			if (startingLocation.getBlock().getType() == Material.STAINED_GLASS
 					&& startingLocation.getBlock().getZ() >= 51){
 				player.sendMessage(ChatColor.RED + "You can't place missiles in your shield!");
 				return false;
@@ -150,7 +155,12 @@ public class Missiles {
 				player.sendMessage(ChatColor.RED + "You can't place missiles back here!");
 				return false;
 			}
-			if (startingLocation.getBlock().getType() != Material.AIR
+			if (startingLocation.getBlockX() <= -71){
+				// player is trying to place a missile near or inside the barrier blocks (to grief missile storage)
+				player.sendMessage(ChatColor.RED + "You can't place missiles over here!");
+				return false;
+			}
+			if (startingLocation.getBlock().getType() == Material.STAINED_GLASS
 					&& startingLocation.getBlockZ() <= -51){
 				player.sendMessage(ChatColor.RED + "You can't place missiles in your shield!");
 				return false;
@@ -288,8 +298,8 @@ public class Missiles {
 						}
 						
 						// sets this block to the same data as the one in storage (basically copies it)
-						tempBlock.setType(missileBlock.getType(), false); // set the type and apply physics to it
-						tempBlock.setData(missileBlock.getData(), false); // set the data and apply physics to it
+						tempBlock.setType(missileBlock.getType(), false); // set the type and don't apply physics to it
+						tempBlock.setData(missileBlock.getData(), false); // set the data and don't apply physics to it
 						
 						/*
 						 * checks if the block is a piston and if it has an adjacent piston. If so,

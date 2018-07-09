@@ -27,7 +27,8 @@ public class MissilePlacing implements Listener{
 				&& Core.gameState == GameState.Running
 				&& e.getAction() == Action.RIGHT_CLICK_BLOCK
 				&& e.getPlayer().getItemInHand() != null
-				&& e.getPlayer().getItemInHand().getType() == Material.MONSTER_EGG){
+				&& e.getPlayer().getItemInHand().getType() == Material.MONSTER_EGG
+				&& e.getPlayer().getGameMode() != GameMode.SPECTATOR){
 			e.setCancelled(true); // prevent regular egg placing
 			int team = Core.gameManager.getPlayerTeam(e.getPlayer());
 			if (team != -1){

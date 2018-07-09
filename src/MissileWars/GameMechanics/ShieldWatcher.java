@@ -48,7 +48,8 @@ public class ShieldWatcher implements Runnable{
 					
 					if (shieldBlock.getType() != Material.AIR
 							&& tempBlock.getType() != Material.OBSIDIAN
-							&& tempBlock.getType() != Material.PORTAL){
+							&& tempBlock.getType() != Material.PORTAL
+							&& tempBlock.getType() != Material.BARRIER){
 						tempBlock.setType(shieldBlock.getType());
 						tempBlock.setData(shieldBlock.getData());
 					}
