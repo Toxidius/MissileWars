@@ -24,6 +24,7 @@ public class PlayerDeath implements Listener{
 		player.setHealth(20); // auto-respawn/cancel-respawn the player
 		Core.gameManager.simulateDeath(player);
 		
+		// player name colorizing
 		int spaceIndex = e.getDeathMessage().indexOf(" ") + 1;
 		String cause = e.getDeathMessage().substring(spaceIndex); // returns the text after the players name (cause of death)
 		
@@ -34,10 +35,10 @@ public class PlayerDeath implements Listener{
 				if (otherPlayer != null){
 					int otherPlayerTeam = Core.gameManager.getPlayerTeam(otherPlayer);
 					if (otherPlayerTeam == 1){
-						cause = cause.replace(string, Core.team1Color + otherPlayer.getName() + ChatColor.WHITE);
+						cause = cause.replace(string, Core.team1Color + otherPlayer.getName() + ChatColor.GRAY);
 					}
 					else if (otherPlayerTeam == 2){
-						cause = cause.replace(string, Core.team2Color + otherPlayer.getName() + ChatColor.WHITE);
+						cause = cause.replace(string, Core.team2Color + otherPlayer.getName() + ChatColor.GRAY);
 					}
 				}
 			}
@@ -45,13 +46,13 @@ public class PlayerDeath implements Listener{
 		
 		int team = Core.gameManager.getPlayerTeam(player);
 		if (team == 1){
-			e.setDeathMessage(Core.team1Color + player.getName() + " " + ChatColor.WHITE + cause);
+			e.setDeathMessage(Core.team1Color + player.getName() + " " + ChatColor.GRAY + cause);
 		}
 		else if (team == 2){
-			e.setDeathMessage(Core.team2Color + player.getName() + " " + ChatColor.WHITE + cause);
+			e.setDeathMessage(Core.team2Color + player.getName() + " " + ChatColor.GRAY + cause);
 		}
 		else{
-			e.setDeathMessage(ChatColor.GRAY + player.getName() + " " + ChatColor.WHITE + cause);
+			e.setDeathMessage(ChatColor.GRAY + player.getName() + " " + ChatColor.GRAY + cause);
 		}
 	}
 	
